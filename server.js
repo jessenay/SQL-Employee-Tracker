@@ -17,27 +17,38 @@ function viewTable() {
             type: 'list',
             name: 'table',
             message: 'What would you like to do?',
-            choices: ['View Departments', 'View Jobs', 'View Managers', 'View Employees', 'Exit']
+            choices: ['View Departments', 'Add Department', 'View Jobs', 'Add Job', 'View Managers', 'Add Manager', 'View Employees', 'Add Employee', 'Exit']
         }
     ]).then((answers) => {
         switch (answers.table) {
             case 'View Departments':
                 viewDepartments();
                 break;
+            case 'Add Department':
+                addDepartment();
+                break;
             case 'View Jobs':
                 viewJobs();
+                break;
+            case 'Add Job':
+                addJob();
                 break;
             case 'View Managers':
                 viewManagers();
                 break;
+            case 'Add Manager':
+                addManager();
+                break;
             case 'View Employees':
                 viewEmployees();
+                break;
+            case 'Add Employee':
+                addEmployee();
                 break;
             case 'Exit':
                 break;
             default:
                 console.log('Invalid choice. Please choose a valid option.');
-                viewTable();
         }
     });
 }
@@ -137,5 +148,57 @@ const viewEmployees = () => {
         });
     });
 }
+
+const addDepartment = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'departmentName',
+            message: 'Enter the name of the department:',
+        }
+    ]).then((answers) => {
+        const query = 'INSERT INTO departments (department_name) VALUES (?)';
+        db.query(query, [answers.departmentName], (err, results) => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log('Department added successfully!');
+            }
+            viewTable();
+        });
+    });
+};
+const addJob = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'roleTitle',
+            message: 'Enter the title of the job:'
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'Enter the salary for the job:'
+        },
+        {
+            type: 'input',
+            name: 'departmentId',
+            message: 'Enter the department ID for the job:'
+        }
+    ]).then((answers) => {
+        const { roleTitle, salary, departmentId } = answers;
+
+        db.query('INSERT INTO roles (role_title, salary, department_id) VALUES (?, ?, ?)', [roleTitle, salary, departmentId], (err, results) => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(`Job '${roleTitle}' added successfully.`);
+            }
+
+            viewTable();
+        });
+    });
+};
+
 
 viewTable();
