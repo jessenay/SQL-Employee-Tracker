@@ -200,5 +200,70 @@ const addJob = () => {
     });
 };
 
+const addManager = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'Enter the first name of the manager:'
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'Enter the last name of the manager:'
+        }
+    ]).then((answers) => {
+        const { firstName, lastName } = answers;
+
+        db.query('INSERT INTO managers (first_name, last_name) VALUES (?, ?)', [firstName, lastName], (err, results) => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(`Manager '${firstName} ${lastName}' added successfully.`);
+            }
+
+            viewTable();
+        });
+    });
+};
+
+const addEmployee = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'Enter the first name of the employee:'
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'Enter the last name of the employee:'
+        },
+        {
+            type: 'input',
+            name: 'jobId',
+            message: 'Enter the job ID for the employee:'
+        },
+        {
+            type: 'input',
+            name: 'managerId',
+            message: 'Enter the manager ID for the employee:'
+        }
+    ]).then((answers) => {
+        const { firstName, lastName, jobId, managerId } = answers;
+
+        db.query('INSERT INTO employees (first_name, last_name, job_id, manager_id) VALUES (?, ?, ?, ?)', [firstName, lastName, jobId, managerId], (err, results) => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log(`Employee '${firstName} ${lastName}' added successfully.`);
+            }
+
+            viewTable();
+        });
+    });
+};
+
+
 
 viewTable();
