@@ -1,4 +1,4 @@
-const express = require('express');
+const inquirer = require('inquirer');
 const mysql = require('mysql2');
 require('dotenv').config();
 
@@ -11,32 +11,29 @@ const db = mysql.createConnection({
     database: "employees_db"
 }, console.log('Connected to the employees database'));
 
-const app = express();
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-
-app.get('/api/departments', (req, res) => {
-    db.query("SELECT * FROM departments", (err, result) => {
-        if (err) {
-            res.json('{"message": "an error occurred"}').status(500);
-        } else {
-            res.json(result);
+function viewTable() {
+    inquirer.createPromptModule([
+        {
+            type: 'list',
+            name: 'table',
+            message: 'What would you like to do?',
+            choices: ['View Departments', 'View Jobs', 'View Managers', 'View Employees']
+        }
+    ]).then((answers) => {
+        switch (answers.table) {
+            case 'View Departments':
+                viewDepartments();
+                break;
+            case 'View Jobs':
+                viewJobs();
+                break;
+            case 'View Managers':
+                viewManagers();
+                break;
+            case 'View Employees':
+                viewEmployees();
+                break;
         }
     });
-});
+}
 
-app.post('/api/departments', (req, res) => {
-    const { id, department_name } = req.body;
-
-    db.query("INSERT INTO departments (id, department_name) VALUES (?, ?)", [id, department_name], (err, result) => {
-        if (err) {
-            res.json('{"message": "an error occurred"}').status(500);
-        } else {
-            res.json(result);
-        }
-    });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
